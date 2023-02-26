@@ -12,28 +12,30 @@ class Vector(val x: Double, val y: Double) {
   def euclideanLength: Double = Math.sqrt(this.x * this.x + this.y * this.y)
 
   def normalized(): Vector = {
-    if (this.euclideanLength == 0) {
+    val len = this.euclideanLength
+    if (len == 0) {
       return new Vector(0, 0)
     }
-    return new Vector(this.x / this.euclideanLength, this.y / this.euclideanLength)
+    return new Vector(this.x / len, this.y / len)
   }
 
-  override def equals(other: Any): Boolean = this.toString == other.toString
+  override def equals(other: Any): Boolean = other match {
+    case Vector(this.x,this.y) => true
+    case _ => false
+  }
 
   // Vector(x, y)
-  override def toString: String = "Vector(" + this.x + ", " + this.y + ")"
+  override def toString: String = s"Vector(${this.x}, ${this.y})"
 }
 
 object Vector {
+
+  private val nullVector = new Vector(0, 0)
   def fromAngle(angle: Double, length: Double): Vector =
     new Vector(length * Math.sin(Math.PI / 2 - angle), length * Math.sin(angle))
 
   def sum(list: List[Vector]): Vector = {
-    var vector = new Vector(0, 0)
-    for (i <- list) {
-      vector += i
-    }
-    return vector
+    return list.foldLeft(nullVector)((m, n) => m + n)
   }
 
   def unapply(arg: Vector): Option[(Double, Double)] = Option(arg.x, arg.y)
