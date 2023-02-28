@@ -1,5 +1,7 @@
 package exercises01
 
+import exercises01.Vector.nullVector
+
 class Vector(val x: Double, val y: Double) {
   def +(other: Vector): Vector = new Vector(other.x + x, other.y + y)
 
@@ -14,13 +16,13 @@ class Vector(val x: Double, val y: Double) {
   def normalized(): Vector = {
     val len = euclideanLength
     if (len == 0) {
-      return new Vector(0, 0)
+      return nullVector
     }
     new Vector(x / len, y / len)
   }
 
   override def equals(other: Any): Boolean = other match {
-    case Vector(x, y) => x == this.x && y == this.y
+    case Vector(a, b) => a == x && b == y
     case _            => false
   }
 
