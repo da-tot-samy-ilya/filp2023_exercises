@@ -29,15 +29,12 @@ class Game(controller: GameController) {
         if (n == number) {
           controller.guessed()
           return
-        }
-        else if (n > number) {
+        } else if (n > number) {
           controller.numberIsSmaller()
-        }
-        else {
+        } else {
           controller.numberIsBigger()
         }
-      }
-      else {
+      } else {
         controller.wrongInput()
       }
       controller.askNumber()
