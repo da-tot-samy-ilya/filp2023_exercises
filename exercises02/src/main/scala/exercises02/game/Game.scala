@@ -16,5 +16,33 @@ class Game(controller: GameController) {
     *
     * @param number загаданное число
     */
-  def play(number: Int): Unit = ???
+  def play(number: Int): Unit = {
+    controller.askNumber()
+    var input = controller.nextLine()
+    while (true) {
+      if (input == GameController.IGiveUp) {
+        controller.giveUp(number)
+        return
+      }
+      if (isDigit(input)) {
+        val n = input.toInt
+        if (n == number) {
+          controller.guessed()
+          return
+        }
+        else if (n > number) {
+          controller.numberIsSmaller()
+        }
+        else {
+          controller.numberIsBigger()
+        }
+      }
+      else {
+        controller.wrongInput()
+      }
+      controller.askNumber()
+      input = controller.nextLine()
+    }
+  }
+  def isDigit(n_s: String): Boolean = n_s.toCharArray.forall(c => Character.isDigit(c))
 }
