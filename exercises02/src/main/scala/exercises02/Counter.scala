@@ -2,16 +2,21 @@ package exercises02
 
 object Counter {
 
+  private val re1    = "[()\\s.,!?:\\n\\t\\r]"
+  private val re2    = "[()\\s!?:\\n\\t\\r]"
+  private val letter = "[a-zA-Z]".r
+  private val number = "\\d".r
+
   /**
     * Посчитать количество вхождений слов в тексте
     * слово отделено символами [\s.,!?:\n\t\r]
     */
   def countWords(text: String): Map[String, Int] =
     text
-      .split("[()\\s.,!?:\\n\\t\\r]")
+      .split(re1)
       .filter(s => s.nonEmpty)
       .map(s => s.toLowerCase())
-      .groupBy(l => l)
+      .groupBy(identity)
       .map(t => (t._1, t._2.length))
 
   /**
@@ -19,7 +24,7 @@ object Counter {
     * слово отделено символами [\s.,!?:\n\t\r]
     */
   def countEnglishWords(text: String): Map[String, Int] =
-    countWords(text).filter(item => (97 to 122 contains item._1.charAt(0).toByte))
+    countWords(text).filter(item => letter.matches(item._1.slice(0, 1)))
 
   /**
     * Посчитать количество вхождений чисел в тексте
@@ -27,8 +32,8 @@ object Counter {
     */
   def countNumbers(text: String): Map[String, Int] =
     text
-      .split("[()\\s!?:\\n\\t\\r]")
-      .filter(s => s.nonEmpty && Character.isDigit(s.charAt(0)))
-      .groupBy(l => l)
+      .split(re2)
+      .filter(s => s.nonEmpty && number.matches(s.slice(0, 1)))
+      .groupBy(identity)
       .map(t => (t._1, t._2.length))
 }

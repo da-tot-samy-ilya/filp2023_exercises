@@ -1,4 +1,5 @@
 package exercises02.game
+import scala.annotation.tailrec
 
 class Game(controller: GameController) {
 
@@ -16,30 +17,29 @@ class Game(controller: GameController) {
     *
     * @param number загаданное число
     */
-  def play(number: Int): Unit = {
+  @tailrec
+  final def play(number: Int): Unit = {
     controller.askNumber()
-    var input = controller.nextLine()
-    while (true) {
-      if (input == GameController.IGiveUp) {
-        controller.giveUp(number)
+    val input = controller.nextLine()
+    if (input == GameController.IGiveUp) {
+      controller.giveUp(number)
+      return
+    }
+    if (input.toIntOption.nonEmpty && input.nonEmpty) {
+      val n = input.toIntOption.getOrElse(0)
+      if (n == number) {
+        controller.guessed()
         return
-      }
-      if (isDigit(input)) {
-        val n = input.toInt
-        if (n == number) {
-          controller.guessed()
-          return
-        } else if (n > number) {
-          controller.numberIsSmaller()
-        } else {
-          controller.numberIsBigger()
-        }
+      } else if (n > number) {
+        controller.numberIsSmaller()
+        play(number)
       } else {
-        controller.wrongInput()
+        controller.numberIsBigger()
+        play(number)
       }
-      controller.askNumber()
-      input = controller.nextLine()
+    } else {
+      controller.wrongInput()
+      play(number)
     }
   }
-  def isDigit(n_s: String): Boolean = n_s.toCharArray.forall(c => Character.isDigit(c))
 }
