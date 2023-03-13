@@ -24,22 +24,22 @@ class Game(controller: GameController) {
 
     if (input == GameController.IGiveUp) {
       controller.giveUp(number)
-      return
-    }
-    input.toIntOption match {
-      case Some(n) =>
-        if (n == number) {
-          controller.guessed()
-        } else if (n > number) {
-          controller.numberIsSmaller()
+    } else {
+      input.toIntOption match {
+        case Some(n) =>
+          if (n == number) {
+            controller.guessed()
+          } else if (n > number) {
+            controller.numberIsSmaller()
+            play(number)
+          } else {
+            controller.numberIsBigger()
+            play(number)
+          }
+        case None =>
+          controller.wrongInput()
           play(number)
-        } else {
-          controller.numberIsBigger()
-          play(number)
-        }
-      case None =>
-        controller.wrongInput()
-        play(number)
+      }
     }
   }
 }
