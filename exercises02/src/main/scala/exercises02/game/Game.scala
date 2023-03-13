@@ -21,25 +21,25 @@ class Game(controller: GameController) {
   final def play(number: Int): Unit = {
     controller.askNumber()
     val input = controller.nextLine()
+
     if (input == GameController.IGiveUp) {
       controller.giveUp(number)
       return
     }
-    if (input.toIntOption.nonEmpty && input.nonEmpty) {
-      val n = input.toIntOption.getOrElse(0)
-      if (n == number) {
-        controller.guessed()
-        return
-      } else if (n > number) {
-        controller.numberIsSmaller()
+    input.toIntOption match {
+      case Some(n) =>
+        if (n == number) {
+          controller.guessed()
+        } else if (n > number) {
+          controller.numberIsSmaller()
+          play(number)
+        } else {
+          controller.numberIsBigger()
+          play(number)
+        }
+      case None =>
+        controller.wrongInput()
         play(number)
-      } else {
-        controller.numberIsBigger()
-        play(number)
-      }
-    } else {
-      controller.wrongInput()
-      play(number)
     }
   }
 }
