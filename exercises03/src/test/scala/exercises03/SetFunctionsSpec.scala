@@ -23,8 +23,9 @@ class SetFunctionsSpec extends AnyWordSpec with ScalaCheckDrivenPropertyChecks {
       val singletonSet = SetFunctions.singletonSet(42)
       assert(singletonSet(42))
       forAll { i: Int =>
-        if (i != 42)
+        if (i != 42) {
           assert(!singletonSet(i))
+        }
       }
     }
   }
