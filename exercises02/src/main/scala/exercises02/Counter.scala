@@ -4,8 +4,8 @@ object Counter {
 
   private val dividersForWords   = "[()\\s.,!?:\\n\\t\\r]".r
   private val dividersForNumbers = "[()\\s!?:\\n\\t\\r]".r
-  private val letter             = "[a-zA-Z]".r
-  private val number             = "\\d".r
+  private val letters            = "[a-zA-Z'-]+".r
+  private val numbers            = "[\\d,.]+".r
 
   /**
     * Посчитать количество вхождений слов в тексте
@@ -24,7 +24,7 @@ object Counter {
     * слово отделено символами [\s.,!?:\n\t\r]
     */
   def countEnglishWords(text: String): Map[String, Int] =
-    countWords(text).filter(item => letter.matches(item._1.charAt(0).toString))
+    countWords(text).filter(item => letters.matches(item._1))
 
   /**
     * Посчитать количество вхождений чисел в тексте
@@ -33,7 +33,7 @@ object Counter {
   def countNumbers(text: String): Map[String, Int] =
     dividersForNumbers
       .split(text)
-      .filter(s => s.nonEmpty && number.matches(s.charAt(0).toString))
+      .filter(s => s.nonEmpty && numbers.matches(s))
       .groupBy(identity)
       .map(t => (t._1, t._2.length))
 }
