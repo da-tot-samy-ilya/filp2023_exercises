@@ -17,7 +17,7 @@ object SetFunctions {
   def filter[A](s: Set[A], p: A => Boolean): Set[A] = intersect(s,p)
 
   def cartesianProduct[A, B](as: Set[A], bs: Set[B]): Set[(A, B)] = {
-    for {a <- Set(as); b <- Set(bs)} yield (a,b)
+    (a: A, b: B) => as(a) && bs(b)
   }
 
 }
