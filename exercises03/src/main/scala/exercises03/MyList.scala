@@ -8,7 +8,7 @@ case object Nil extends MyList[Nothing]
 
 object MyList {
   def sum(list: MyList[Int]): Int = list match {
-    case Nil => 0
+    case Nil                                => 0
     case Cons(head: Int, tail: MyList[Int]) => head + sum(tail)
   }
 

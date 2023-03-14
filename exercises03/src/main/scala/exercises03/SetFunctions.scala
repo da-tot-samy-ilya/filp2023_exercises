@@ -4,7 +4,7 @@ object SetFunctions {
   type Set[A] = A => Boolean
 
   def contains[A](s: Set[A], elem: A): Boolean = s(elem)
-  def singletonSet[A](elem: A): Set[A] = Set(elem)
+  def singletonSet[A](elem: A): Set[A]         = Set(elem)
 
   def union[A](s: Set[A], t: Set[A]): Set[A] = el => s(el) || t(el)
 
@@ -14,10 +14,8 @@ object SetFunctions {
 
   def symmetricDiff[A](s: Set[A], t: Set[A]): Set[A] = el => (s(el) && !t(el)) || (!s(el) && t(el))
 
-  def filter[A](s: Set[A], p: A => Boolean): Set[A] = intersect(s,p)
+  def filter[A](s: Set[A], p: A => Boolean): Set[A] = intersect(s, p)
 
-  def cartesianProduct[A, B](as: Set[A], bs: Set[B]): Set[(A, B)] = {
-    (a: A, b: B) => as(a) && bs(b)
-  }
+  def cartesianProduct[A, B](as: Set[A], bs: Set[B]): Set[(A, B)] = pair => as(pair._1) && bs(pair._2)
 
 }
