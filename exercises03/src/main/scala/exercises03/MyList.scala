@@ -12,7 +12,7 @@ object MyList {
   @tailrec
   def sum(list: MyList[Int], acc: Int = 0): Int = list match {
     case Nil                                => acc
-    case Cons(head: Int, tail: MyList[Int]) => sum(tail, acc+head)
+    case Cons(head: Int, tail: MyList[Int]) => sum(tail, acc + head)
   }
 
   def reverse[A](list: MyList[A]): MyList[A] = {
