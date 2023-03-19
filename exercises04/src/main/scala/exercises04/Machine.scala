@@ -19,5 +19,21 @@ object Machine {
   }
 
   @scala.annotation.tailrec
-  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) = ???
+  def run(machine: Machine, inputs: List[Input]): (Machine, List[Input]) =
+    if (machine.candies == 0) (machine, inputs)
+    else
+      inputs match {
+        case ::(head, next) =>
+          head match {
+            case Input.Coin =>
+              if (!machine.locked) run(machine, next)
+              else
+                run(Machine(false, machine.candies, machine.coins + 1), next)
+            case Input.Turn =>
+              if (machine.locked) run(machine, next)
+              else
+                run(Machine(true, machine.candies - 1, machine.coins), next)
+          }
+        case Nil => (machine, Nil)
+      }
 }
