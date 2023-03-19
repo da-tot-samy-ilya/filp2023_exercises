@@ -21,9 +21,5 @@ object Game {
     case Guessed         => _.guessed()
   }
 
-  def completed(state: State): Boolean = state match {
-    case Guessed => true
-    case GiveUp  => true
-    case _       => false
-  }
+  def completed(state: State): Boolean = state == GiveUp || state == Guessed
 }
