@@ -15,8 +15,9 @@ object Tree {
       case Leaf(value) :: tail         => helper(tail, f(value) :: acc)
       case Branch(left, right) :: tail => helper(left :: right :: tail, acc)
     }
-
-    helper(List(t), Nil).reverse.reduce(g)
+    helper(List(t), Nil).reverse match {
+      case head :: tail => tail.foldLeft(head)(g)
+    }
   }
   def size[A](t: Tree[A]): Int = fold(t)(_ => 1)(1 + _ + _)
 
