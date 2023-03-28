@@ -15,5 +15,12 @@ object Combinators {
   //
   // Напишите функцию, используя комбинаторы стандартной библиотеки,
   // которая проведёт полную реакцию
-  def react(ipt: String): String = ???
+  def react(ipt: String): String = {
+    ipt
+      .foldRight(List[Char]()) {
+        case (char, acc) if !acc.isEmpty && acc.head.toLower == char.toLower && acc.head != char => acc.tail
+        case (char, acc)                                                                         => char :: acc
+      }
+      .mkString
+  }
 }
