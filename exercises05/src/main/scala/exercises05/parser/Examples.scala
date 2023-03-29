@@ -53,26 +53,6 @@ object Examples {
       }
     case None => Some(0, 0, false)
   }
-//  def transformToEither(rawUser: RawUser): Either[Error, User] =
-//    (for {
-//      id <- rawUser.id.toLongOption
-//      firstName: String <- rawUser.firstName
-//      secondName: String <- rawUser.secondName
-//      passport: (Long, Long, Boolean) <- checkPassport(rawUser.passport)
-//    } yield
-//      if (rawUser.banned) Left(Banned)
-//      else if (rawUser.id.isEmpty) Left(InvalidId)
-//      else if (rawUser.firstName.isEmpty || rawUser.secondName.isEmpty) Left(InvalidName)
-//      else if (rawUser.passport.isEmpty) Left(InvalidPassport)
-//      else
-//        passport match {
-//          case (series: Long, number: Long, true) =>
-//            Right(User(id, UserName(firstName, secondName, rawUser.thirdName), Some(Passport(series, number))))
-//          case (_, _, false) => Right(User(id, UserName(firstName, secondName, rawUser.thirdName), None))
-//        }) match {
-//      case Some(value) => value
-//    }
-
   def transformToEither(rawUser: RawUser): Either[Error, User] = {
     val passportOption = checkPassport(rawUser.passport)
     (for {
