@@ -20,7 +20,7 @@ object Combinators {
       .foldRight(List[Char]()) {
         case (char, acc) if acc.nonEmpty && acc.headOption.exists(h => h.toLower == char.toLower && h != char) =>
           acc.drop(1)
-        case (char, acc) => char :: acc
+        case (c, acc) => c :: acc
       }
       .mkString
   }
