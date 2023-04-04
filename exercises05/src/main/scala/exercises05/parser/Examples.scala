@@ -58,7 +58,6 @@ object Examples {
     * используйте for-comprehension
     * но для того, чтобы for-comprehension заработал надо реализовать map и flatMap в Either
     */
-
 //  def transformToEither(rawUser: RawUser): Either[Error, User] = {
 //    val passportOption = checkPassport(rawUser.passport)
 //    (for {
@@ -82,27 +81,26 @@ object Examples {
 //        }
 //    }
 //  }
-  def transformToEither(rawUser: RawUser): Either[Error, User] = {
-    val passportOption = checkPassport(rawUser.passport)
-    (for {
+  private def generateUser(
+      id: Long,
+      firstName: String,
+      secondName: String,
+      thirdName: Option[String],
+      passport: Option[Passport]
+  ): Either[Error, User] = {
+    Right(User(id, UserName(firstName, secondName, thirdName), passport))
+  }
+
+  def transformToEither(rawUser: RawUser): Either[Error, User] =
+    for {
+      _          <- if (rawUser.banned) Left(Banned) else Right()
       id         <- Either.fromOption(rawUser.id.toLongOption)(InvalidId)
       firstName  <- Either.fromOption(rawUser.firstName)(InvalidName)
       secondName <- Either.fromOption(rawUser.secondName)(InvalidName)
-      passport   <- Either.fromOption(passportOption)(InvalidPassport)
-      if !rawUser.banned
-    } yield (id, firstName, secondName, passport)) match {
-      case Some((id, firstName, secondName, CheckPassportResult(series, number, true))) =>
-        Right(User(id, UserName(firstName, secondName, rawUser.thirdName), Some(Passport(series, number))))
-      case Some((id, firstName, secondName, CheckPassportResult(_, _, false))) =>
-        Right(User(id, UserName(firstName, secondName, rawUser.thirdName), None))
-      case None =>
-        (rawUser.banned, rawUser.id.toLongOption, rawUser.firstName, rawUser.secondName, passportOption) match {
-          case (true, _, _, _, _) => Left(Banned)
-          case (_, None, _, _, _) => Left(InvalidId)
-          case (_, _, None, _, _) => Left(InvalidName)
-          case (_, _, _, None, _) => Left(InvalidName)
-          case (_, _, _, _, None) => Left(InvalidPassport)
-        }
-    }
-  }
+      passport   <- Either.fromOption(checkPassport(rawUser.passport))(InvalidPassport)
+      user <- if (passport.isSuccess)
+        generateUser(id, firstName, secondName, rawUser.thirdName, Some(Passport(passport.series, passport.number)))
+      else generateUser(id, firstName, secondName, rawUser.thirdName, None)
+      finalResult <- Right(user)
+    } yield finalResult
 }

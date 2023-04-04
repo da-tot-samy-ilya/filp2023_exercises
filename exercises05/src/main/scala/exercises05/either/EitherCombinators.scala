@@ -5,7 +5,7 @@ object EitherCombinators {
   sealed trait Either[+A, +B] {
     def orElse[EE >: A, C >: B](other: => Either[EE, C]): Either[EE, C] = (this, other) match {
       case (Right(v1), Right(_)) => Right(v1)
-      case (Left(_), Right(v1))        => Right(v1)
+      case (Left(_), Right(v1))  => Right(v1)
       case _                     => this
     }
     def map2[AA >: A, BB, C](other: => Either[AA, BB])(f: (B, BB) => C): Either[AA, C] = (this, other) match {
@@ -37,7 +37,7 @@ object EitherCombinators {
 
     def traverse[E, A, B](list: List[A])(f: A => Either[E, B]): Either[E, List[B]] = {
       list match {
-        case Nil            => Right(Nil)
+        case Nil          => Right(Nil)
         case head :: tail => f(head).map2(traverse(tail)(f))(_ :: _)
       }
     }
