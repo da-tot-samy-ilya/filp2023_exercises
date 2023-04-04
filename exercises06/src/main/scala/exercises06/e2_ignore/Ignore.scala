@@ -26,7 +26,7 @@ object IgnoreInstances {
 
 object IgnoreSyntax {
   // возможно, стоит изменить сигнатуру
-  implicit class IgnoreOps[M[_] : Ignore, A](m: M[A]) {
+  implicit class IgnoreOps[M[_]: Ignore, A](m: M[A]) {
     def ignore(f: A => Boolean): M[A] = implicitly[Ignore[M]].ignore(m)(f)
   }
 }
