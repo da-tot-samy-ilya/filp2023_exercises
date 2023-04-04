@@ -4,7 +4,7 @@ import exercises06.e3_transformer.Error.{InvalidId, InvalidName}
 
 trait Transformer[A, B] {
   def toOption(a: A): Option[B]
-
+  
   def toEither(a: A): Either[Error, B]
 }
 
