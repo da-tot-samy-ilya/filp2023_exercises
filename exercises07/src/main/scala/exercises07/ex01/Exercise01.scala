@@ -6,28 +6,27 @@ import exercises07.typeclasses._
 object Exercise01 {
   object Syntax {
 
-    implicit class Fo[F[_], A](private val f_a: F[A]) extends AnyVal {
-      def map[B](f: A => B)(implicit functor: Functor[F]): F[B] = functor.map(f_a)(f)
-
-      def aproduct[B](f_b: F[B])(implicit appl: Applicative[F]): F[(A, B)] =
-        appl.product(f_a, f_b)
-
-      def foldLeft[B](b: B)(ff: (B, A) => B)(implicit foldable: Foldable[F]): B = foldable.foldLeft(f_a, b)(ff)
-
-      def app[B](ff: F[A => B])(implicit ap: Applicative[F]): F[B] = Applicative[F].ap(ff)(f_a)
-
-      def combineAll(implicit foldable: Foldable[F], monoid: Monoid[A]): A =
-        foldable.foldLeft(f_a, monoid.empty)(monoid.combine)
-
-      def traverse[G[_]: Applicative, B](f: A => G[B])(implicit trav: Traverse[F]): G[F[B]] =
-        trav.traverse(f_a)(f)
-
+    implicit class SemigroupOps[A](val x: A) extends AnyVal {
+      def |+|(y: A)(implicit semigroup: Semigroup[A]): A = semigroup.combine(x, y)
     }
 
-    implicit class Ao[A](private val a: A) extends AnyVal {
-      def pure[F[_]: Applicative]: F[A] = Applicative[F].pure(a)
+    implicit class FOps[F[_], A](private val fa: F[A]) extends AnyVal {
+      def aproduct[B](fb: F[B])(implicit ap: Applicative[F]): F[(A, B)] = ap.product(fa, fb)
 
-      def |+|(b: A)(implicit semigroup: Semigroup[A]): A = semigroup.combine(a, b)
+      def ap[B](ff: F[A => B])(implicit ap: Applicative[F]): F[B] = Applicative[F].ap(ff)(fa)
+
+      def traverse[G[_] : Applicative, B](f: A => G[B])(implicit traverse: Traverse[F]): G[F[B]] = traverse.traverse(fa)(f)
+
+      def foldLeft[B](b: B)(ff: (B, A) => B)(implicit foldable: Foldable[F]): B = foldable.foldLeft(fa, b)(ff)
+
+      def map[B](f: A => B)(implicit functor: Functor[F]): F[B] = functor.map(fa)(f)
+
+      def combineAll(implicit foldable: Foldable[F], monoid: Monoid[A]): A = foldable.foldLeft(fa, monoid.empty)(monoid.combine)
+    }
+
+    implicit class ApplicativeOps[A](private val x: A) extends AnyVal {
+      def pure[F[_] : Applicative]: F[A] = Applicative[F].pure(x)
+
     }
   }
 
@@ -52,12 +51,8 @@ object Exercise01 {
       override def map[A, B](fa: List[A])(f: A => B): List[B] = fa.map(f)
 
       override def traverse[G[_]: Applicative, A, B](fa: List[A])(f: A => G[B]): G[List[B]] =
-        fa.foldLeft(List.empty[B].pure[G])((acc, other) =>
-          acc
-            .aproduct(f(other))
-            .map({
-              case (acc, next) => acc.appended(next)
-            })
+        fa.foldLeft(List.empty[B].pure[G])((accF, next) =>
+          accF.aproduct(f(next)).map { case (acc, next) => acc :+ next }
         )
 
       override def foldLeft[A, B](fa: List[A], b: B)(f: (B, A) => B): B = fa.foldLeft(b)(f)
@@ -107,7 +102,7 @@ object Exercise01 {
         def foldLeft[A, B](fa: NonEmptyList[A], b: B)(f: (B, A) => B): B = fa.tail.foldLeft(f(b, fa.head))(f)
 
         def ap[A, B](ff: NonEmptyList[A => B])(fa: NonEmptyList[A]): NonEmptyList[B] =
-          NonEmptyList(ff.head(fa.head), fa.tail.app(ff.tail))
+          NonEmptyList(ff.head(fa.head), fa.tail.ap(ff.tail))
 
         def pure[A](a: A): NonEmptyList[A] = NonEmptyList(a)
       }
