@@ -15,17 +15,19 @@ object Exercise01 {
 
       def ap[B](ff: F[A => B])(implicit ap: Applicative[F]): F[B] = Applicative[F].ap(ff)(fa)
 
-      def traverse[G[_] : Applicative, B](f: A => G[B])(implicit traverse: Traverse[F]): G[F[B]] = traverse.traverse(fa)(f)
+      def traverse[G[_]: Applicative, B](f: A => G[B])(implicit traverse: Traverse[F]): G[F[B]] =
+        traverse.traverse(fa)(f)
 
       def foldLeft[B](b: B)(ff: (B, A) => B)(implicit foldable: Foldable[F]): B = foldable.foldLeft(fa, b)(ff)
 
       def map[B](f: A => B)(implicit functor: Functor[F]): F[B] = functor.map(fa)(f)
 
-      def combineAll(implicit foldable: Foldable[F], monoid: Monoid[A]): A = foldable.foldLeft(fa, monoid.empty)(monoid.combine)
+      def combineAll(implicit foldable: Foldable[F], monoid: Monoid[A]): A =
+        foldable.foldLeft(fa, monoid.empty)(monoid.combine)
     }
 
     implicit class ApplicativeOps[A](private val x: A) extends AnyVal {
-      def pure[F[_] : Applicative]: F[A] = Applicative[F].pure(x)
+      def pure[F[_]: Applicative]: F[A] = Applicative[F].pure(x)
 
     }
   }
