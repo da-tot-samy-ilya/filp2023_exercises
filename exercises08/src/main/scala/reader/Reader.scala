@@ -5,7 +5,13 @@ import typeclasses.Monad
 case class Reader[R, A](run: R => A)
 
 object Reader {
-  implicit def monad[R]: Monad[Reader[R, *]] = ???
+  implicit def monad[R]: Monad[Reader[R, *]] = new Monad[Reader[R, *]] {
+    override def flatMap[A, B](fa: Reader[R, A])(f: A => Reader[R, B]): Reader[R, B] = Reader(r => f(fa.run(r)).run(r))
+
+    override def pure[A](a: A): Reader[R, A] = Reader(_ => a)
+
+    override def map[A, B](fa: Reader[R, A])(f: A => B): Reader[R, B] = Reader(r => f(fa.run(r)))
+  }
 
   def ask[R]: Reader[R, R] =
     Reader(identity)
