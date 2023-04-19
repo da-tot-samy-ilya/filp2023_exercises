@@ -1,5 +1,6 @@
 package state
 
+import state.StatelessRandom.secondInt
 import typeclasses.Monad
 
 object StatefulRandom {
@@ -111,7 +112,7 @@ object BetterStatelessRandom {
   val pair: RandomState[(Int, Int)] = for {
     v1 <- nextInt
     v2 <- nextInt
-  } yield (v1, v1)
+  } yield (v1, v2)
 
   // Функция возвращает случайное число от нуля до единицы
   val double: RandomState[Double] = for {
