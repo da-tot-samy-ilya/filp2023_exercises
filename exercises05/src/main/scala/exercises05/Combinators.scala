@@ -14,6 +14,13 @@ object Combinators {
   // hefGFEgeHE <- итоговая цепочка, в которой 10 частиц
   //
   // Напишите функцию, используя комбинаторы стандартной библиотеки,
-  // которая проведёт полную реакцию
-  def react(ipt: String): String = ???
+  // которая проведёт полную реакциi
+  def react(ipt: String): String = {
+    ipt
+      .foldRight(List[Char]()) {
+        case (char, head :: tail) if head.toLower == char.toLower && head != char => tail
+        case (char, acc)                                                          => char :: acc
+      }
+      .mkString
+  }
 }
