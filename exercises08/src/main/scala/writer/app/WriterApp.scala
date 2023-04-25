@@ -46,11 +46,11 @@ object WriterApp extends App {
     }
 
     def transact(good: Good): WithLogs[Transaction] =
-      Transaction(good.price).pure[WithLogs].tell(Logs.single(s"spent ${good.price}"))
+      WithLogs.log(s"spent ${good.price}").as(Transaction(good.price))
 
     def aggregate(transactions: NonEmptyList[Transaction]): WithLogs[Transaction] = {
       val all = transactions.reduce(Semigroup[Transaction].combine)
-      all.pure[WithLogs].tell(Logs.single(s"spent total ${all.price}"))
+      WithLogs.log(s"spent total ${all.price}").as(Transaction(all.price))
     }
 
     def buyAll(wallet: Wallet): WithLogs[Wallet] =

@@ -103,9 +103,7 @@ object BetterStatelessRandom {
   val nextInt: RandomState[Int] = RandomState(_.nextInt)
 
   // Функция возвращает случайное неотрицальное целое число
-  val nonNegativeInt: RandomState[Int] = for {
-    value <- nextInt
-  } yield math.abs(value)
+  val nonNegativeInt: RandomState[Int] = nextInt.map(math.abs)
 
   // Функция возвращает пару случайных неотрицальных целых чисел
   val pair: RandomState[(Int, Int)] = for {
@@ -114,9 +112,7 @@ object BetterStatelessRandom {
   } yield (value1, value2)
 
   // Функция возвращает случайное число от нуля до единицы
-  val double: RandomState[Double] = for {
-    value <- nonNegativeInt
-  } yield value / Int.MaxValue
+  val double: RandomState[Double] = nonNegativeInt.map(el => el / Int.MaxValue)
 
   // Функция возвращает список случайной длины из случайных целых чисел
   val randomList: RandomState[List[Int]] = for {
