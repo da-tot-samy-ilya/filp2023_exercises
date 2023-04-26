@@ -22,9 +22,15 @@ import twitter.domain._
   * CompetitionMethods.unlikeAll
   * CompetitionMethods.topAuthor
   */
-class IOCompetition(service: TwitterService[IO], methods: CompetitionMethods[IO])
-    extends Competition[IO] {
-  def winner(users: List[User], followers: Map[User, List[User]], botUser: User): IO[User] = ???
+class IOCompetition(service: TwitterService[IO], methods: CompetitionMethods[IO]) extends Competition[IO] {
+  def winner(users: List[User], followers: Map[User, List[User]], botUser: User): IO[User] =
+    for {
+      tweetsIds <- users.parTraverse(x => service.tweet(x, f"${x.id} will win!").map(y => (x, y)))
+      _         <- tweetsIds.parTraverse(x => followers(x._1).parTraverse(service.like(_, x._2)))
+      _         <- methods.unlikeAll(botUser, tweetsIds.map(x => x._2))
+      user      <- methods.topAuthor(tweetsIds.map(x => x._2))
+      winner    <- IO.fromOption(user)(TopAuthorNotFound)
+    } yield winner
 }
 
 object IOCompetitionRun extends IOApp {
